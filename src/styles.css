@@ -18,9 +18,24 @@
   --sans-display: 'Manrope', 'DM Sans', sans-serif;
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f2ec;
+  --panel: #fffdf9;
+  --panel-soft: #eeeae1;
+  --ink: #26221e;
+  --muted: #777066;
+  --muted-light: #655e54;
+  --line: rgba(47, 39, 30, .14);
+  --gold: #a8784f;
+  --gold-bright: #986b45;
+  background: var(--bg);
+  color: var(--ink);
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 90px; }
-body { min-width: 360px; margin: 0; background: var(--bg); }
+body { min-width: 360px; margin: 0; background: var(--bg); color: var(--ink); transition: background .28s ease, color .28s ease; }
 button, a { font: inherit; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
@@ -41,6 +56,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold-bright); o
 .nav-cta span { color: var(--gold-bright); font-size: 16px; }
 .nav-cta:hover { border-color: var(--gold); background: rgba(196,154,112,.1); }
 .menu-toggle { display: none; }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; margin-right: 14px; padding: 0 12px; border: 1px solid rgba(234,222,205,.3); background: rgba(12,11,10,.16); color: #f3eee5; font-size: 10px; cursor: pointer; transition: .2s ease; }
+.theme-toggle > span:first-child { color: #e2bd93; font-size: 16px; }
+.theme-toggle:hover { border-color: var(--gold); background: rgba(196,154,112,.12); }
 
 .hero {
   position: relative; min-height: 740px; height: min(860px, 100svh); display: flex; align-items: center;
@@ -183,6 +201,58 @@ h2 em { font-size: 1.05em; }
 .footer { min-height: 90px; padding: 20px 6.4vw; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); color: #777168; font-size: 9px; }
 .footer .brand { color: var(--ink); font-size: 10px; }
 
+.discovery-section { padding: 112px 0 120px; background: var(--bg); transition: background .28s ease; }
+.discovery-heading { margin-bottom: 42px; }
+.discovery-panel { overflow: hidden; border: 1px solid var(--line); background: var(--panel); transition: background .28s ease, border-color .28s ease; }
+.discovery-topline { min-height: 78px; padding: 15px 22px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid var(--line); }
+.discovery-live { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
+.source-chip { padding: 6px 8px; border: 1px solid var(--line); color: var(--muted); font-size: 7px; letter-spacing: .09em; }
+.locate-button { min-height: 41px; gap: 12px; }
+.discovery-status { padding: 20px 22px 8px; color: var(--muted); font-size: 12px; }
+.discovery-error { margin: 4px 22px 14px; color: #a24e3f; font-size: 11px; line-height: 1.6; }
+.cinema-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 22px 24px; }
+.cinema-card { min-width: 0; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 11px; align-items: center; padding: 14px; border: 1px solid var(--line); background: var(--bg); }
+.cinema-card-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid rgba(168,120,79,.45); color: var(--gold-bright); font: 600 17px var(--serif); }
+.cinema-card-info, .showtime-info { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.cinema-card-info strong, .showtime-info strong { overflow: hidden; color: var(--ink); font: 700 12px var(--sans-display); text-overflow: ellipsis; white-space: nowrap; }
+.cinema-card-info span, .showtime-info span { overflow: hidden; color: var(--muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.cinema-card-actions { grid-column: 2; display: flex; gap: 13px; }
+.cinema-card-actions a, .venue-link, .key-row > a { color: var(--gold-bright); font-size: 9px; }
+.showtime-list { padding: 8px 22px 22px; }
+.discover-subheading { display: flex; justify-content: space-between; padding: 9px 0 12px; color: var(--muted); font-size: 8px; font-weight: 700; letter-spacing: .12em; }
+.showtime-card { min-height: 69px; display: grid; grid-template-columns: 36px minmax(110px, 1fr) minmax(120px, auto) auto; gap: 14px; align-items: center; border-top: 1px solid var(--line); }
+.showtime-poster { width: 34px; height: 46px; display: grid; place-items: center; background: linear-gradient(145deg,#273634,#9c785a); color: #f5e5ce; }
+.showtime-time { color: var(--muted-light); font-size: 10px; }
+.listing-only { color: var(--muted); font-size: 9px; }
+.showtime-access { margin: 0 22px 20px; border-top: 1px solid var(--line); padding-top: 15px; }
+.showtime-access summary { color: var(--ink); font-size: 10px; font-weight: 700; cursor: pointer; }
+.showtime-access p { max-width: 760px; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.key-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.key-row input { width: min(280px, 100%); height: 40px; padding: 0 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 10px; }
+.key-row .button { min-height: 40px; }
+.data-footnote { padding: 13px 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; line-height: 1.6; }
+
+:root[data-theme='light'] .booking-section,
+:root[data-theme='light'] .closing-section { background: #ebe7df; border-color: rgba(47,39,30,.1); }
+:root[data-theme='light'] .booking-shell,
+:root[data-theme='light'] .booking-main,
+:root[data-theme='light'] .ticket-card { background: var(--panel); }
+:root[data-theme='light'] .hall-label,
+:root[data-theme='light'] .aside-title h3,
+:root[data-theme='light'] .date-option strong,
+:root[data-theme='light'] .time-option,
+:root[data-theme='light'] .booking-total strong,
+:root[data-theme='light'] .ticket-facts strong,
+:root[data-theme='light'] .movie-book { color: var(--ink); }
+:root[data-theme='light'] .date-option,
+:root[data-theme='light'] .time-option { border-color: rgba(47,39,30,.16); }
+:root[data-theme='light'] .selected-seat { color: #8c603a; }
+:root[data-theme='light'] .booking-aside { background: var(--panel); }
+:root[data-theme='light'] .ticket-section { background: var(--bg); }
+:root[data-theme='light'] .footer { background: var(--bg); color: var(--muted); }
+:root[data-theme='light'] .footer .brand { color: var(--ink); }
+:root[data-theme='light'] .main-nav { background: #171512; }
+
 @media (min-width: 1500px) {
   .hero-content, .section-wrap { padding-left: 0; padding-right: 0; }
   .topbar { padding-left: max(6.4vw, calc((100vw - 1280px) / 2)); padding-right: max(6.4vw, calc((100vw - 1280px) / 2)); }
@@ -199,6 +269,7 @@ h2 em { font-size: 1.05em; }
   .ticket-info { padding: 27px; }
   .closing-inner { grid-template-columns: 1fr 1.6fr; }
   .closing-inner > a { grid-column: 2; justify-self: start; }
+  .cinema-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   body { min-width: 320px; }
@@ -206,11 +277,28 @@ h2 em { font-size: 1.05em; }
   .brand { font-size: 11px; }
   .brand-mark { width: 27px; height: 27px; }
   .nav-cta { margin-left: auto; margin-right: 14px; padding: 9px 11px; gap: 14px; font-size: 9px; }
+  .theme-toggle { min-height: 32px; margin-right: 7px; padding: 0 8px; }
+  .theme-toggle-label { display: none; }
   .menu-toggle { width: 30px; height: 30px; padding: 7px 4px; display: flex; flex-direction: column; justify-content: center; gap: 5px; border: 0; background: transparent; }
   .menu-toggle span { width: 21px; height: 1px; background: #e3dcd0; }
   .main-nav { position: absolute; top: 68px; right: 0; left: 0; display: none; flex-direction: column; align-items: stretch; gap: 0; margin: 0; padding: 7px 20px 14px; border-bottom: 1px solid var(--line); background: #141310; }
   .main-nav.is-open { display: flex; }
   .main-nav a { padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .discovery-section { padding: 82px 0 88px; }
+  .discovery-topline { align-items: flex-start; flex-direction: column; padding: 15px; }
+  .discovery-status { padding: 17px 15px 6px; font-size: 10px; }
+  .discovery-error { margin-left: 15px; margin-right: 15px; }
+  .cinema-grid { grid-template-columns: 1fr; padding: 12px 15px 18px; }
+  .showtime-list { padding-left: 15px; padding-right: 15px; }
+  .showtime-card { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; }
+  .showtime-time { grid-column: 2; }
+  .showtime-card .venue-link, .showtime-card .listing-only { grid-column: 3; grid-row: 1 / span 2; }
+  .showtime-info strong { font-size: 10px; }
+  .discover-subheading { font-size: 7px; }
+  .showtime-access { margin-left: 15px; margin-right: 15px; }
+  .key-row { align-items: flex-start; flex-direction: column; }
+  .key-row input { width: 100%; }
+  .data-footnote { padding-left: 15px; padding-right: 15px; }
   .hero { min-height: 650px; height: 88svh; max-height: 800px; background-position: 62% center; }
   .hero-content { margin-top: 36px; padding: 0 22px; }
   .eyebrow { font-size: 8px; letter-spacing: .14em; }

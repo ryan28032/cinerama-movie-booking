@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import Discovery from './Discovery'
 
 const Cinema = lazy(() => import('./Cinema'))
 type CameraView = 'overview' | 'front' | 'screen'
@@ -159,6 +160,13 @@ function downloadTicket(ticket: Ticket) {
 
 function App() {
   const reduceMotion = useReducedMotion()
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const saved = localStorage.getItem('cinerama-theme')
+      if (saved === 'dark' || saved === 'light') return saved
+    } catch { /* local storage can be unavailable */ }
+    return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  })
   const dates = useMemo(nextDates, [])
   const [movie, setMovie] = useState<Movie | null>(null)
   const [date, setDate] = useState(dates[0].key)
@@ -181,6 +189,11 @@ function App() {
   useEffect(() => {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(bookings)) } catch { /* storage can be disabled in private browsing */ }
   }, [bookings])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try { localStorage.setItem('cinerama-theme', theme) } catch { /* keep the selected theme for this visit */ }
+  }, [theme])
 
   useEffect(() => {
     const host = sceneHost.current
@@ -243,9 +256,11 @@ function App() {
         <a className="brand" href="#top" aria-label="Cinerama home"><span className="brand-mark">C</span><span>CINERAMA</span></a>
         <nav className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
           <a href="#films" onClick={() => setMenuOpen(false)}>Now showing</a>
+          <a href="#cinemas" onClick={() => setMenuOpen(false)}>Cinemas near me</a>
           <a href="#booking" onClick={() => setMenuOpen(false)}>Book seats</a>
           {ticket && <a href="#ticket" onClick={() => setMenuOpen(false)}>My ticket</a>}
         </nav>
+        <button className="theme-toggle" onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}><span aria-hidden="true">{theme === 'dark' ? '☼' : '☾'}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Light' : 'Dark'}</span></button>
         <button className="nav-cta" onClick={() => enterBooking(movie ?? movies[0])}>Book a film <span aria-hidden="true">↗</span></button>
         <button className="menu-toggle" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><span /><span /></button>
       </header>
@@ -289,6 +304,8 @@ function App() {
             ))}
           </div>
         </section>
+
+        <Discovery />
 
         <section className="booking-section" id="booking">
           <div className="section-wrap">
