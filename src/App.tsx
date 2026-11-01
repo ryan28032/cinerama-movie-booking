@@ -236,13 +236,6 @@ function App() {
     window.setTimeout(() => scrollTo('ticket'), 120)
   }
 
-  const enterBooking = (picked = movies[0]) => {
-    setMovie(picked)
-    setSelected([])
-    setTicket(null)
-    window.setTimeout(() => scrollTo('booking'), 80)
-  }
-
   const fadeUp = {
     initial: reduceMotion ? { opacity: 1 } : { opacity: 0, y: 22 },
     whileInView: { opacity: 1, y: 0 },
@@ -261,7 +254,7 @@ function App() {
           {ticket && <a href="#ticket" onClick={() => setMenuOpen(false)}>My ticket</a>}
         </nav>
         <button className="theme-toggle" onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}><span aria-hidden="true">{theme === 'dark' ? '☼' : '☾'}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Light' : 'Dark'}</span></button>
-        <button className="nav-cta" onClick={() => enterBooking(movie ?? movies[0])}>Book a film <span aria-hidden="true">↗</span></button>
+        <button className="nav-cta" onClick={() => scrollTo('cinemas')}>Find cinemas <span aria-hidden="true">↗</span></button>
         <button className="menu-toggle" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><span /><span /></button>
       </header>
 
@@ -272,21 +265,21 @@ function App() {
             <motion.h1 {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>MAKE A NIGHT<br />OF <em>IT.</em></motion.h1>
             <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.14 }}>The lights go down. The rest of the world can wait.</motion.p>
             <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }} className="hero-actions">
-              <button className="button button-primary" onClick={() => enterBooking(movies[0])}>Book a seat <span>↗</span></button>
+              <button className="button button-primary" onClick={() => scrollTo('cinemas')}>Find a cinema <span>↗</span></button>
               <a className="text-link" href="#films">Explore films <span>↓</span></a>
             </motion.div>
           </div>
-          <div className="hero-note"><span className="live-dot" /> NOW PLAYING <span className="hero-note-separator">/</span> THE GOOD KIND OF ESCAPE</div>
+          <div className="hero-note"><span className="live-dot" /> CINERAMA PREVIEW <span className="hero-note-separator">/</span> A CINEMATIC BOOKING CONCEPT</div>
           <div className="hero-index"><span>01</span><i /> 04</div>
         </section>
 
         <section className="film-section section-wrap" id="films">
           <div className="section-heading">
             <motion.div {...fadeUp}>
-              <div className="eyebrow"><span className="eyebrow-line" /> ON THE BIG SCREEN</div>
+              <div className="eyebrow"><span className="eyebrow-line" /> CINERAMA PREVIEW · SAMPLE TITLES</div>
               <h2>Stories worth<br className="mobile-break" /> <em>showing up for.</em></h2>
             </motion.div>
-            <motion.p {...fadeUp} className="section-aside">A carefully chosen mix of new releases<br />and films that stay with you.</motion.p>
+            <motion.p {...fadeUp} className="section-aside">These are sample titles for the booking preview.<br />Choose a city below for real mapped cinema listings.</motion.p>
           </div>
           <div className="movie-grid">
             {movies.map((item, index) => (
@@ -305,8 +298,6 @@ function App() {
           </div>
         </section>
 
-        <Discovery />
-
         <section className="booking-section" id="booking">
           <div className="section-wrap">
             <div className="section-heading booking-heading">
@@ -316,6 +307,8 @@ function App() {
               </motion.div>
               <motion.p {...fadeUp} className="section-aside">Move around the room. Find your view.<br />This is the fun part.</motion.p>
             </div>
+
+            <Discovery />
 
             <div className="booking-shell">
               <div className="booking-main">

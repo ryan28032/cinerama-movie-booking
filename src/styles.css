@@ -203,11 +203,17 @@ h2 em { font-size: 1.05em; }
 
 .discovery-section { padding: 112px 0 120px; background: var(--bg); transition: background .28s ease; }
 .discovery-heading { margin-bottom: 42px; }
+.booking-section > .section-wrap > .discovery-section { padding: 8px 0 44px; background: transparent; }
+.booking-section > .section-wrap > .discovery-section > .section-wrap { width: 100%; padding-left: 0; padding-right: 0; }
 .discovery-panel { overflow: hidden; border: 1px solid var(--line); background: var(--panel); transition: background .28s ease, border-color .28s ease; }
 .discovery-topline { min-height: 78px; padding: 15px 22px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid var(--line); }
 .discovery-live { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
 .source-chip { padding: 6px 8px; border: 1px solid var(--line); color: var(--muted); font-size: 7px; letter-spacing: .09em; }
+.discover-controls { display: flex; align-items: center; gap: 9px; }
+.discover-controls select { min-width: 160px; height: 41px; padding: 0 30px 0 12px; border: 1px solid var(--line); border-radius: 0; background: var(--bg); color: var(--ink); font: inherit; font-size: 10px; }
 .locate-button { min-height: 41px; gap: 12px; }
+.location-button { min-height: 41px; padding: 0 10px; border: 1px solid var(--line); background: transparent; color: var(--muted-light); font-size: 9px; cursor: pointer; }
+.location-button:hover { border-color: var(--gold); color: var(--ink); }
 .discovery-status { padding: 20px 22px 8px; color: var(--muted); font-size: 12px; }
 .discovery-error { margin: 4px 22px 14px; color: #a24e3f; font-size: 11px; line-height: 1.6; }
 .cinema-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 22px 24px; }
@@ -225,7 +231,9 @@ h2 em { font-size: 1.05em; }
 .showtime-time { color: var(--muted-light); font-size: 10px; }
 .listing-only { color: var(--muted); font-size: 9px; }
 .showtime-access { margin: 0 22px 20px; border-top: 1px solid var(--line); padding-top: 15px; }
-.showtime-access summary { color: var(--ink); font-size: 10px; font-weight: 700; cursor: pointer; }
+.showtime-access-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.showtime-access-heading strong { color: var(--ink); font-size: 10px; }
+.showtime-access-heading span { color: var(--muted); font-size: 9px; }
 .showtime-access p { max-width: 760px; color: var(--muted); font-size: 10px; line-height: 1.7; }
 .key-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .key-row input { width: min(280px, 100%); height: 40px; padding: 0 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 10px; }
@@ -285,7 +293,12 @@ h2 em { font-size: 1.05em; }
   .main-nav.is-open { display: flex; }
   .main-nav a { padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
   .discovery-section { padding: 82px 0 88px; }
+  .booking-section > .section-wrap > .discovery-section { padding: 0 0 30px; }
+  .discovery-heading { margin-bottom: 24px; }
   .discovery-topline { align-items: flex-start; flex-direction: column; padding: 15px; }
+  .discover-controls { width: 100%; align-items: stretch; flex-wrap: wrap; }
+  .discover-controls select { flex: 1; }
+  .location-button { min-height: 40px; }
   .discovery-status { padding: 17px 15px 6px; font-size: 10px; }
   .discovery-error { margin-left: 15px; margin-right: 15px; }
   .cinema-grid { grid-template-columns: 1fr; padding: 12px 15px 18px; }

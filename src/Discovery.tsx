@@ -16,6 +16,7 @@ type Screening = {
   format?: string
   url?: string
   address?: string
+  poster?: string
 }
 
 const OVERPASS_ENDPOINTS = [
@@ -23,6 +24,23 @@ const OVERPASS_ENDPOINTS = [
   'https://overpass.kumi.systems/api/interpreter',
 ]
 const CINEMA_API = 'https://opencinemaproject.com/api/v1/public'
+const CITIES = [
+  { name: 'Select a city', lat: 0, lon: 0 },
+  { name: 'Ahmedabad', lat: 23.0225, lon: 72.5714 },
+  { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 },
+  { name: 'Chennai', lat: 13.0827, lon: 80.2707 },
+  { name: 'Delhi', lat: 28.6139, lon: 77.209 },
+  { name: 'Hyderabad', lat: 17.385, lon: 78.4867 },
+  { name: 'Jaipur', lat: 26.9124, lon: 75.7873 },
+  { name: 'Kochi', lat: 9.9312, lon: 76.2673 },
+  { name: 'Kolkata', lat: 22.5726, lon: 88.3639 },
+  { name: 'Lucknow', lat: 26.8467, lon: 80.9462 },
+  { name: 'Mumbai', lat: 19.076, lon: 72.8777 },
+  { name: 'Nagpur', lat: 21.1458, lon: 79.0882 },
+  { name: 'Pune', lat: 18.5204, lon: 73.8567 },
+  { name: 'London', lat: 51.5072, lon: -0.1276 },
+  { name: 'New York', lat: 40.7128, lon: -74.006 },
+]
 
 function safeWebsite(value?: string) {
   if (!value) return undefined
@@ -44,6 +62,7 @@ function normalizeScreening(value: Record<string, unknown>, index: number): Scre
     format: value.format ? String(value.format) : value.screening_format ? String(value.screening_format) : undefined,
     url: safeWebsite(String(value.purchase_url ?? value.booking_url ?? value.ticket_url ?? '')),
     address: value.theater_address ? String(value.theater_address) : value.address ? String(value.address) : undefined,
+    poster: safeWebsite(String(value.poster_url ?? value.poster ?? '')),
   }
 }
 
@@ -51,20 +70,17 @@ export default function Discovery() {
   const [places, setPlaces] = useState<CinemaPlace[]>([])
   const [screenings, setScreenings] = useState<Screening[]>([])
   const [apiKey, setApiKey] = useState('')
+  const [city, setCity] = useState('')
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('Use your location to find nearby cinema listings.')
+  const [message, setMessage] = useState('Choose a city to load its real mapped cinema directory.')
   const [error, setError] = useState('')
 
-  const findNearby = () => {
-    if (!navigator.geolocation) {
-      setError('Location is not available in this browser. You can still browse films above.')
-      return
-    }
+  const searchPoint = async (point: { lat: number; lon: number }, placeName: string) => {
     setBusy(true)
     setError('')
-    setMessage('Finding cinemas nearby…')
-    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-      const point = { lat: coords.latitude, lon: coords.longitude }
+    setPlaces([])
+    setScreenings([])
+    setMessage(`Finding cinemas in ${placeName}…`)
       const radius = 25000
       const query = `[out:json][timeout:20];(node[amenity=cinema](around:${radius},${point.lat},${point.lon});way[amenity=cinema](around:${radius},${point.lat},${point.lon});relation[amenity=cinema](around:${radius},${point.lat},${point.lon}););out center tags;`
       try {
@@ -89,7 +105,7 @@ export default function Discovery() {
           }
         }).filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lon))
         setPlaces(found)
-        setMessage(found.length ? `${found.length} cinema ${found.length === 1 ? 'listing' : 'listings'} within 25 km` : 'No mapped cinemas found within 25 km. Try a larger city or check again later.')
+        setMessage(found.length ? `${found.length} mapped cinema ${found.length === 1 ? 'listing' : 'listings'} near ${placeName} · Locations from OpenStreetMap` : `No mapped cinemas found near ${placeName}. Try another city or check again later.`)
       } catch (reason) {
         setError(reason instanceof Error ? reason.message : 'Could not load cinema listings right now.')
         setMessage('Nearby listings could not be loaded.')
@@ -110,11 +126,32 @@ export default function Discovery() {
         setScreenings([])
       }
       setBusy(false)
+  }
+
+  const findNearby = () => {
+    if (!navigator.geolocation) {
+      setError('Location is not available in this browser. Choose a city instead.')
+      return
+    }
+    setBusy(true)
+    setError('')
+    setMessage('Finding cinemas nearby…')
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      void searchPoint({ lat: coords.latitude, lon: coords.longitude }, 'your location')
     }, (reason) => {
       setBusy(false)
       setError(reason.code === reason.PERMISSION_DENIED ? 'Location permission was declined. Allow it in your browser to discover nearby cinemas.' : 'Your location could not be determined. Please try again.')
       setMessage('Location needed for nearby listings.')
     }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 })
+  }
+
+  const searchCity = () => {
+    const selectedCity = CITIES.find((item) => item.name === city)
+    if (!selectedCity || !selectedCity.lat) {
+      setError('Choose a city to search its cinema directory.')
+      return
+    }
+    void searchPoint(selectedCity, selectedCity.name)
   }
 
   return (
@@ -123,7 +160,7 @@ export default function Discovery() {
         <div className="section-heading discovery-heading">
           <div>
             <div className="eyebrow"><span className="eyebrow-line" /> OUT THERE, ON THE BIG SCREEN</div>
-            <h2>Your neighborhood,<br className="mobile-break" /> <em>in the picture.</em></h2>
+            <h2>Find a cinema.<br className="mobile-break" /> <em>Pick a city.</em></h2>
           </div>
           <p className="section-aside">Find independent cinemas and showtimes around you.<br />Listings link straight to the venue for ticket checkout.</p>
         </div>
@@ -131,7 +168,14 @@ export default function Discovery() {
         <div className="discovery-panel">
           <div className="discovery-topline">
             <div className="discovery-live"><span className="live-dot" /> LOCAL CINEMA GUIDE <span className="source-chip">OPEN MAP DATA</span></div>
-            <button className="button button-primary locate-button" onClick={findNearby} disabled={busy}>{busy ? 'Finding nearby…' : '⌖  Find cinemas near me'}</button>
+            <div className="discover-controls">
+              <select aria-label="Choose a city" value={city} onChange={(event) => setCity(event.target.value)}>
+                <option value="">Choose a city</option>
+                {CITIES.filter((item) => item.lat).map((item) => <option key={item.name} value={item.name}>{item.name}</option>)}
+              </select>
+              <button className="button button-primary locate-button" onClick={searchCity} disabled={busy}>{busy ? 'Searching…' : 'Show cinemas'}</button>
+              <button className="location-button" onClick={findNearby} disabled={busy}>⌖ Use my location</button>
+            </div>
           </div>
           <div className="discovery-status" aria-live="polite">{message}</div>
           {error && <p className="discovery-error" role="status">{error}</p>}
@@ -139,9 +183,9 @@ export default function Discovery() {
           {screenings.length > 0 && <div className="showtime-list">
             <div className="discover-subheading"><span>LIVE SHOWTIMES</span><span>Open Cinema Project</span></div>
             {screenings.slice(0, 6).map((show) => <article className="showtime-card" key={show.id}>
-              <div className="showtime-poster" aria-hidden="true">✦</div>
-              <div className="showtime-info"><strong>{show.title}</strong><span>{show.theater}{show.address ? ` · ${show.address}` : ''}</span></div>
-              <div className="showtime-time">{new Date(show.time).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
+              <div className="showtime-poster" aria-hidden="true">{show.poster ? <img src={show.poster} alt="" loading="lazy" /> : '✦'}</div>
+              <div className="showtime-info"><strong>{show.title}</strong><span>{show.theater}{show.address ? ` · ${show.address}` : ''}{show.format ? ` · ${show.format}` : ''}</span></div>
+              <div className="showtime-time">{Number.isNaN(new Date(show.time).getTime()) ? show.time : new Date(show.time).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
               {show.url ? <a className="venue-link" href={show.url} target="_blank" rel="noreferrer">Tickets ↗</a> : <span className="listing-only">Venue checkout</span>}
             </article>)}
           </div>}
@@ -158,11 +202,11 @@ export default function Discovery() {
             })}
           </div>}
 
-          <details className="showtime-access">
-            <summary>Connect free indie cinema showtimes</summary>
-            <p>Open Cinema Project shares listings from participating independent cinemas. Get a free key, paste it here, then search nearby. The key stays in this browser tab and is sent only to Open Cinema Project.</p>
-            <div className="key-row"><input aria-label="Open Cinema Project API key" type="password" autoComplete="off" placeholder="oc_live_… API key" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /><button className="button button-primary" onClick={findNearby} disabled={busy || !apiKey.trim()}>Load showtimes</button><a href="https://opencinemaproject.com/developers" target="_blank" rel="noreferrer">Get a free key ↗</a></div>
-          </details>
+          <div className="showtime-access">
+            <div className="showtime-access-heading"><strong>Real indie cinema showtimes</strong><span>Free API key · participating venues</span></div>
+            <p>Connect the Open Cinema Project feed to see actual screenings for your chosen city. The key stays in this tab and is sent only to Open Cinema Project. Standard cinema chains may not be covered.</p>
+            <div className="key-row"><input aria-label="Open Cinema Project API key" type="password" autoComplete="off" placeholder="Paste free Open Cinema API key" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /><button className="button button-primary" onClick={searchCity} disabled={busy || !apiKey.trim() || !city}>Load showtimes</button><a href="https://opencinemaproject.com/developers" target="_blank" rel="noreferrer">Get a free key ↗</a></div>
+          </div>
           <div className="data-footnote">Cinema locations © OpenStreetMap contributors · Showtimes by Open Cinema Project. Availability is provided by each venue; purchases and seat holds happen on its own ticketing site.</div>
         </div>
       </div>
