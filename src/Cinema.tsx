@@ -179,7 +179,7 @@ export default function Cinema({ selected, reserved, onSelect, view, title }: Ci
 
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={[1, 1.65]}
       camera={{ position: cameraViews.overview.slice(0, 3) as [number, number, number], fov: 43, near: 0.1, far: 80 }}
       gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
